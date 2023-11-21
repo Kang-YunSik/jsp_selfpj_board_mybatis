@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace의 값은 Mapper.interface의 경로 -->
+<mapper namespace="mybatis.mapper.MVCBoardMapper">
+    <select id="selectCount" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM mvcboard
+        <where>
+            <if test="searchWord != null">
+                AND ${searchField} LIKE CONCAT('%', #{searchWord}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectListPage" parameterType="map" resultType="VO.MVCBoardVO">
+        SELECT *
+        FROM (
+        SELECT Tb.*, ROW_NUMBER() OVER (ORDER BY idx DESC) AS rNUM
+        FROM (
+        SELECT * FROM mvcboard
+        <where>
+            <if test="searchWord != null">
+                AND ${searchField} LIKE CONCAT('%', #{searchWord}, '%')
+            </if>
+        </where>
+        ) AS Tb
+        ) AS subquery
+        WHERE rNUM BETWEEN #{start} AND #{end}
+    </select>
+
+    <update id="updateVisitCount" parameterType="String">
+        UPDATE mvcboard
+        SET visitcount = visitcount + 1
+        WHERE idx = #{idx}
+    </update>
+
+    <select id="selectView" parameterType="String" resultType="VO.MVCBoardVO">
+        SELECT *
+        FROM mvcboard
+        WHERE idx = #{idx}
+    </select>
+
+    <insert id="insertWrite" parameterType="VO.MVCBoardVO">
+        INSERT INTO mvcboard (name, title, content, ofile, sfile, pass)
+        VALUES (#{name}, #{title}, #{content}, #{ofile}, #{sfile}, #{pass})
+    </insert>
+
+    <update id="downCountPlus" parameterType="String">
+        UPDATE mvcboard
+        SET downcount = downcount + 1
+        WHERE idx = #{idx}
+    </update>
+
+    <select id="confirmPassword" resultType="int" parameterType="map">
+        SELECT COUNT(*) FROM mvcboard WHERE pass=#{pass} AND idx=#{idx}
+    </select>
+
+    <delete id="deletePost" parameterType="String">
+        DELETE FROM mvcboard WHERE idx=#{idx}
+    </delete>
+
+    <update id="updatePost" parameterType="VO.MVCBoardVO">
+        UPDATE mvcboard
+        SET title=#{title}, name=#{name}, content=#{content}, ofile=#{ofile}, sfile=#{sfile}
+        WHERE idx=#{idx} AND pass=#{pass}
+    </update>
+</mapper>

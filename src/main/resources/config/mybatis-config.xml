@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- DB의 컬럼명이 snakecase(column_name)로 되어 있을 때, 이를 자바에서 camelcase로 인식해주는 설정  -->
+    <!-- 예를 들어, 데이터베이스에서 user_id라는 컬럼이 있다면 MyBatis는 이를 자바 객체의 userId 필드에 매핑합니다.
+    만약 이 설정이 없다면 MyBatis는 컬럼 이름 그대로를 사용하게 됩니다. -->
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+    </settings>
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <!-- 개인 DB 정보 입력 -->
+            <dataSource type="POOLED">
+                <property name="driver" value="org.mariadb.jdbc.Driver" />
+                <property name="url" value="jdbc:mariadb://localhost:3306/mvc2_board_mybatis" />
+                <property name="username" value="root" />
+                <property name="password" value="12345" />
+            </dataSource>
+        </environment>
+    </environments>
+    <!-- mybatis의 mapper파일(sql문) 리스트 -->
+    <mappers>
+        <mapper resource="mapper/MVCBoardMapper.xml" />
+    </mappers>
+</configuration>
