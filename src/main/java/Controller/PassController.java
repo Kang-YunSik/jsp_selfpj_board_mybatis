@@ -2,6 +2,7 @@ package Controller;
 
 import DAO.MVCBoardDAO;
 import VO.MVCBoardVO;
+import utils.Encrypt;
 import utils.JSFunction;
 
 import javax.servlet.ServletException;
@@ -27,16 +28,23 @@ public class PassController extends HttpServlet {
         // 매개변수 저장
         String idx = req.getParameter("idx");
         String mode = req.getParameter("mode");
-        String pass = req.getParameter("pass");
+
+        // 암호화된 pass 읽기 ===========================
+        String noEncPass = req.getParameter("pass");
+        String encPass = Encrypt.getEncrypt(noEncPass);
+        // 암호화된 pass 읽기 ===========================
+
+
+        // String pass = req.getParameter("pass");
 
         // 비밀번호 확인
         MVCBoardDAO dao = new MVCBoardDAO();
-        boolean confirmed = dao.confirmPassword(pass, idx);
+        boolean confirmed = dao.confirmPassword(encPass, idx);
 
         if (confirmed) {  // 비밀번호 일치
             if (mode.equals("edit")) {  // 수정 모드
                 HttpSession session = req.getSession();
-                session.setAttribute("pass", pass);
+                session.setAttribute("pass", encPass);
                 resp.sendRedirect("../Controller/edit.do?idx=" + idx);
             }
             else if (mode.equals("delete")) {  // 삭제 모드

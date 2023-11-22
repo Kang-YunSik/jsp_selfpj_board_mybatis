@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import DAO.MVCBoardDAO;
 import VO.MVCBoardVO;
+import utils.Encrypt;
 import utils.FileUtil;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -18,7 +19,6 @@ import utils.JSFunction;
         maxRequestSize = 1024 * 1024 * 10
 )
 public class WriteController extends HttpServlet {
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -52,7 +52,14 @@ public class WriteController extends HttpServlet {
         vo.setName(req.getParameter("name"));
         vo.setTitle(req.getParameter("title"));
         vo.setContent(req.getParameter("content"));
-        vo.setPass(req.getParameter("pass"));
+
+        // pass 암호화 처리 ==================================
+        String noEncPass = req.getParameter("pass");
+        String encPass = Encrypt.getEncrypt(noEncPass);
+        // pass 암호화 처리 ==================================
+
+        // 암호화된 pass DTO에 저장
+        vo.setPass(encPass);
 
         // 원본 파일명과 저장된 파일 이름 설정
         if (originalFileName != null && !originalFileName.equals("")) {
